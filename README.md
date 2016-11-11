@@ -1,51 +1,137 @@
-# ES2016_14353432
-### Lab3-DOL实例分析&编程
+## Lab1:DOL开发环境配置
 
-#### 1.Example1
 
-dot图：
 
- ![1](1.jpg)
+​	因为嵌入式系统实验的需求，我们需要在Ubuntu虚拟机中搭建DOL开发环境，按照教程来，只要每一步没有出错，就可以顺利配置成功。
 
-如何修改：
+#### 0.安装一些必要的环境(Ubuntu为例)
 
-​	这次修改在dot图中无法看见，直接看具体代码。因为做平方是在square.c文件中，所以直接进这个文件中进行修改。打开square.c文件，发现里面做平方的代码是i = i * i，所以要改成输出3次方数，直接将这里改成i = i * i * i即可。
+> $  sudo apt-get update
 
->int square_fire(DOLProcess *p) {
+> $  sudo apt-get install ant
+
+> $   sudo apt-get install openjdk-7-jdk
+
+> $  sudo apt-get install unzip
+
+#### 1.下载文件(使用Vmware虚拟机，也可以从主机拷贝到虚拟机中去)
+
+[http://](http://jingyan.baidu.com/article/c33e3f48a5c153ea15cbb5b2.html)[jingyan.baidu.com/article/c33e3f48a5c153ea15cbb5b2.html](http://jingyan.baidu.com/article/c33e3f48a5c153ea15cbb5b2.html)
+
+这个链接里是如何安装VMtools实现虚拟机和pc之间文件交流的教程。
+
+若是在虚拟机中直接下载，分别执行以下两条指令下载压缩包。
+
+> sudo wget [h](http://www.accellera.org/images/downloads/standards/systemc/systemc-2.3.1.tgz)[ttp://www.accellera.org/images/downloads/standards/systemc/systemc-2.3.1.tgz](http://www.accellera.org/images/downloads/standards/systemc/systemc-2.3.1.tgz)
+
+> sudo wget [http://www.tik.ee.ethz.ch/~shapes/downloads/dol_ethz.zip](http://www.tik.ee.ethz.ch/~shapes/downloads/dol_ethz.zip)
+
+
+
+#### 2.解压文件
+
+新建dol的文件夹
+
+> $  mkdirdol
+
+将dolethz.zip解压到 dol文件夹中
+
+> $  unzipdol_ethz.zip -d dol
+
+解压systemc
+
+> $  tar-zxvfsystemc-2.3.1.tgz
+
+
+
+#### 3.编译systemc
+
+解压后进入systemc-2.3.1的目录下
+
+> $  cdsystemc-2.3.1
+
+新建一个临时文件夹objdir
+
+> $  mkdirobjdir
+
+进入该文件夹objdir
+
+> $  cdobjdir
+
+运行configure(能根据系统的环境设置一下参数，用于编译)
+
+> $  ../configureCXX=g++ --disable-async-updates
+
+运行完configure以后terminal应该显示如下：
+
+ ![图片1](图片1.jpg)
+
+编译
+
+> $  sudomake install
+
+编译完后文件目录如下
+
+> $ cd .. 
 >
->    float i;
+> $ ls
+
+ ![图片2](图片2.jpg)
+
+记录当前的工作路径(会输出当前所在路径，记下来，待会有用)
+
+> $ pwd 
+
+ ![图片3](图片3.jpg)
+
+这里表示我当前的工作路径为 /root/systemc-2.3.1
+
+
+
+#### 4.编译dol
+
+进入刚刚dol的文件夹
+
+> $  cd ../dol
+
+修改build_zip.xml文件
+
+找到下面这段话，就是说上面编译的systemc位置在哪里，
+
+> <property name="systemc.inc"value="YYY/include"/>
+
+> <property name="systemc.lib"value="YYY/lib-linux/libsystemc.a"/>
+
+把YYY改成上页pwd的结果（注意，对于  64位 系统的机器，lib-linux要改成lib-linux64）
+
+然后是编译
+
+> $  ant-f build_zip.xml all
+
+若成功会显示build successful
+
+接着可以试试运行第一个例子
+
+进入build/bin/mian路径下
+
+> $  cd build/bin/main
+
+然后运行第一个例子
+
+> $  ant-f runexample.xml -Dnumber=1
+
+成功结果如图
+
+ ![图片4](图片4.jpg)
+
+然后进入dol/build/bin/main/example1
+
+> $ cd
 >
->    if (p->local->index < p->local->len) {
->        DOL_read((void*)PORT_IN, &i, sizeof(float), p);
->        i = i*i*i;
->        DOL_write((void*)PORT_OUT, &i, sizeof(float), p);
->        p->local->index++;
->    }
->    
->    if (p->local->index >= p->local->len) {
->        DOL_detach(p);
->        return -1;
->    }
->    
->    return 0;
->}
->
+> $ cd dol/build/bin/main/example1
 
+文件夹里有一个example1.dot文件，点开此文件，如果之前没有装过dotviewer，会提示你先装上dotviewer，按照提示安装就好。最后打开example1.dot，显示如图。
 
+ ![图片5](图片5.png)
 
-#### 2.Example2
-
-dot图：
-
- ![2](2.jpg)
-
-如何修改：
-
-​	按照PPT，直接将xml文件中的iterator的value从3改成2即可=。=
-
-
-
-实验感想：
-
-​	这次实验，因为比较简单而且提示很详细，所以实现很简单。主要是更熟悉了DOL是怎么使用的。
-
+出现这个界面，说明DOL环境已配置完成。
